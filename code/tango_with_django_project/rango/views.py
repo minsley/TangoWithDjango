@@ -144,7 +144,8 @@ def user_login(request):
     
 @login_required
 def restricted(request):
-    return HttpResponse("If you can see this text, you are logged in!")
+    context = RequestContext(request)
+    return render_to_response('rango/restricted.html', {}, context)
 
 @login_required
 def user_logout(request):

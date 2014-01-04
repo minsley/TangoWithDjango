@@ -1,9 +1,9 @@
-{% extends 'rango/base.html' %}
-
-{% block title %}Register{% endblock %}
-
-{% block body_block %}
-
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Rango</title>
+</head>
+<body>
 	<h1>Register with Rango</h1>
 	
 	{% if registered %}
@@ -12,6 +12,8 @@
 	<a href="/rango/">Return to the homepage.</a><br />
 	
 	{% else %}
+	
+	Rango says: <strong>register here!</strong><br />
 	
 	<form id="user_form" method="post" action="/rango/register/" enctype="multipart/form-data">
 		
@@ -28,4 +30,5 @@
 	
 	{% endif %}
 	
-{% endblock %}
+</body>
+</html>

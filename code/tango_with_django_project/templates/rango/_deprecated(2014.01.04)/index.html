@@ -1,31 +1,58 @@
-{% extends 'rango/base.html' %}
+<!DOCTYPE html>
 
-{% block header_block %}
+{% load static %} <!--  New line -->
 
-    <h1>Rango says...
-    {% if user.is_authenticated %}
-    	hello {{ user.username }}!
-    {% else %}
-    	hello world!
-    {% endif %}
-	</h1>
-	
-{% endblock %}
+<html>
 
-{% block body_block %}
+<head>
+    <title>Rango</title>
+    <link href="{% static 'css/base.css' %}" rel="stylesheet/css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+	<script src="{% static 'js/base.js' %}"></script>
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<!-- Doge Widget --><script src="http://cdn.bitmindo.com/dogecoin.min.js"></script>
+</head>
 
-    <section>
+<body style="background-color:#2f2f2f;">
+	<nav class="navbar navbar-default" role="navigation" style="position: fixed; width: 100%; top:0;">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#">Home</a></li>
+			<li><a href="/rango/about/">About</a></li>
+		</ul>
+	</nav>
+	<header style="height: 500px; background-color:rgba(255,140,0,0.8); margin-top: 80px;">
+		<div style="padding-top: 250px; float:right;">
+		    <h1 style="font-size: 100px; color: #fffff0;">Rango says...</h1>
+		    {% if user.is_authenticated %}
+		    	<p style="padding-left: 6px;">hello {{ user.username }}!<br />
+		    {% else %}
+		    	<p style="padding-left: 6px;">hello world!<br />
+		    {% endif %}
+		    <a href="/rango/about/">About</a><br />
+			{% if user.is_authenticated %}
+				<a href="/rango/restricted/">Restricted Page</a><br />
+				<a href="/rango/logout/">Logout</a><br />
+			{% else %}
+				<a href="/rango/register/">Register Here</a><br />
+				<a href="/rango/login/">Login</a><br />
+			{% endif %}
+	    </div>
+    </header>
+    <section style="padding: 100px 200px 100px 200px; color: #fffff0;">
     	<p>Here's a bunch of crap to fill space. Lipsum is boring, but I suppose it will have to do for now.</p>
+    	<br>
     	<h2>Categories:</h2>
 	    {% if categories %}
 	    	<ul>
-    		{% for category in categories %}
-    			<li><a href="/rango/category/{{ category.url }}">{{ category.name }}</a></li>
-    		{% endfor %}
+	    		{% for category in categories %}
+	    			<li><a href="/rango/category/{{ category.url }}">{{ category.name }}</a></li>
+	    		{% endfor %}
 	    	</ul>
     	{% else %}
     		<strong>There are no categories present.</strong>
 	    {% endif %}
+	    <a href="/rango/add_category/">Add a New Category</a>
 		<br>
 		<h2>Top 5 Most Viewed Pages</h2>
 		{% if top_5_pages %}
@@ -44,13 +71,11 @@
     	<br>
     	<p>Maecenas eget nisl congue, volutpat sapien sit amet, posuere nisi. Suspendisse consequat, orci eget fringilla ultricies, eros eros vestibulum tortor, ut lobortis libero sem et elit. Cras ut augue erat. Etiam suscipit fermentum accumsan. Fusce lobortis viverra sapien id mollis. Cras eu tortor nibh. Vestibulum ultrices dictum hendrerit. </p>
     </section>
-    
     <section style="padding: 100px;">
     	<img src="/media/img/crayons_lg.jpg" style="height:150px; margin: 20px;"/>
     	<img src="/media/img/crayons_lg.jpg" style="height:150px; margin: 20px;"/>
     	<img src="/media/img/crayons_lg.jpg" style="height:150px; margin: 20px;"/>
     </section>
-    
     <footer>
 		<script>
 		  CoinWidgetCom.go({
@@ -67,5 +92,7 @@
 		  });
 		</script>
     </footer>
+</body>
     
-{% endblock %}
+</html>
+    

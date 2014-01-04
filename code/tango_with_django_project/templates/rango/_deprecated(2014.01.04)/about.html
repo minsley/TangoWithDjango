@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+{% load static %} <!--  New line -->
+
+<html>
+
+<head>
+    <title>Rango</title>
+    <link href="{% static "css/base.css" %}" rel="stylesheet/css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+	<script src="{% static "js/base.js" %}">
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+</head>
+
+<body style="background-color:#2f2f2f;">
+	<nav class="navbar navbar-default" role="navigation" style="position: fixed; width: 100%; top:0;">
+		<ul class="nav nav-tabs">
+			<li><a href="/rango">Home</a></li>
+			<li class="active"><a href="#">About</a></li>
+			<li><a href="/rango/login/">Login</a>
+		</ul>
+	</nav>
+	<header style="height: 500px; background-color:rgba(255,140,0,0.8); margin-top: 80px;">
+		<div style="padding-top: 250px; float:right;">
+		    <h1 style="font-size: 100px; color: #fffff0;">It's all about...</h1>
+		    <p style="padding-left: 6px;">the crayons man! 
+		    So many 
+			    <span style="color:red;">c</span>
+			    <span style="color:orange;">o</span>
+			    <span style="color:yellow;">l</span>
+			    <span style="color:green;">o</span>
+			    <span style="color:blue;">r</span>
+			    <span style="color:purple;">s</span>
+		    !</p>
+	    </div>
+    </header>
+    <section style="padding: 100px;">
+    	<img src="/media/img/crayons_lg.jpg" style="width:100%;"/>
+    </section>
+</body>
+    
+</html>
+    
