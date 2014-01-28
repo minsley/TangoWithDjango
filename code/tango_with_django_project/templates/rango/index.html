@@ -13,45 +13,39 @@
 {% endblock %}
 
 {% block body_block %}
+<div class="hero-unit">
+	<h1>Ready to Rango</h1>
+	<p>Find, Add, Share and Rango useful links and resources.</p>
+</div>
 
-    <section>
-    	<p>Here's a bunch of crap to fill space. Lipsum is boring, but I suppose it will have to do for now.</p>
-    	<h2>Categories:</h2>
-	    {% if categories %}
-	    	<ul>
-    		{% for category in categories %}
-    			<li><a href="/rango/category/{{ category.url }}">{{ category.name }}</a></li>
-    		{% endfor %}
-	    	</ul>
-    	{% else %}
-    		<strong>There are no categories present.</strong>
-	    {% endif %}
-		<br>
-		<h2>Top 5 Most Viewed Pages</h2>
-		{% if top_5_pages %}
+<div class="row-fluid">
+	<div class="span6">
+		<h2>Top Five Categories</h2>
+		{% if categories %}
 			<ul>
-				{% for page in top_5_pages %}
-					<li><a href="{{ page.url }}">{{ page.title }}</a>
+				{% for category in categories %}
+					<li><a href="/rango/category/{{ category.url }}">{{ category.name }}</a></li>
 				{% endfor %}
 			</ul>
 		{% else %}
-			<strong>There are no pages present.</strong>
+			<strong>No categories at present.</strong>
 		{% endif %}
-		<br>
-    	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas nulla quam, fermentum mollis commodo sit amet, rhoncus vel lectus. In placerat, mi vel dignissim pellentesque, nisl velit viverra tellus, at congue magna diam non dolor. Morbi rutrum mi ac condimentum faucibus. Pellentesque consectetur felis lectus, at viverra urna sagittis a. Sed mollis pellentesque nibh sit amet sodales. Phasellus aliquam est vitae quam eleifend venenatis. Sed sit amet tempor lectus. Proin pellentesque elementum velit vel varius. Quisque laoreet felis risus, id feugiat odio molestie at. Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris aliquam, nibh at mattis interdum, purus lectus mollis ante, eu pretium libero erat et ante. Suspendisse at odio eu ante aliquam tempor sit amet quis felis. </p>
-    	<br>
-    	<p>Etiam ultricies erat sed mollis laoreet. Ut aliquam gravida ligula, sit amet egestas risus. Ut sit amet quam hendrerit, interdum enim quis, dignissim urna. Aenean tincidunt metus sollicitudin tortor aliquet, ac consequat quam tempor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam ut nisi at tellus hendrerit pulvinar quis sit amet urna. Nam non euismod metus. Aliquam sit amet fermentum dolor. Pellentesque imperdiet, purus placerat condimentum pretium, magna metus vestibulum mi, et auctor ligula lectus ac metus. Sed malesuada, ante ut blandit faucibus, eros nisl varius felis, ac lobortis nunc sapien id augue. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam tincidunt ullamcorper enim et ornare. </p>
-    	<br>
-    	<p>Maecenas eget nisl congue, volutpat sapien sit amet, posuere nisi. Suspendisse consequat, orci eget fringilla ultricies, eros eros vestibulum tortor, ut lobortis libero sem et elit. Cras ut augue erat. Etiam suscipit fermentum accumsan. Fusce lobortis viverra sapien id mollis. Cras eu tortor nibh. Vestibulum ultrices dictum hendrerit. </p>
-    </section>
+	</div>
+	
+	<div class="span6">
+		<h2>Top Five Pages</h2>
+		{% if pages %}
+			<ul>
+				{% for page in pages %}
+					<li><a href="{{ page.url }}">{{ page.title }}</a></li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<strong>No pages at present.</strong>
+		{% endif %}
+	</div>
     
-    <section style="padding: 100px;">
-    	<img src="/media/img/crayons_lg.jpg" style="height:150px; margin: 20px;"/>
-    	<img src="/media/img/crayons_lg.jpg" style="height:150px; margin: 20px;"/>
-    	<img src="/media/img/crayons_lg.jpg" style="height:150px; margin: 20px;"/>
-    </section>
-    
-    <footer>
+<!--     <footer>
 		<script>
 		  CoinWidgetCom.go({
 		    /* make sure you update the wallet_address or you will not get your donations */
@@ -67,5 +61,5 @@
 		  });
 		</script>
     </footer>
-    
+ -->
 {% endblock %}
