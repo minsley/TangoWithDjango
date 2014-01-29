@@ -3,8 +3,11 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+
 from rango.models import Category, Page
 from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
+from rango.bing_search import run_query
+
 from datetime import datetime
 
 def index(request):
@@ -114,6 +117,18 @@ def add_page(request, category_name_url):
         form = PageForm()
         
     return render_to_response('rango/add_page.html', {'category_name_url': category_name_url, 'category_name': category_name, 'form': form}, context)
+
+def search(request):
+    context = RequestContext(request)
+    result_list = []
+    
+    if request.method == 'POST':
+        query = request.POST['query'].strip()
+        
+        if query:
+            result_list = run_query(query)
+    
+    return render_to_response('rango/search.html', {'result_list': result_list}, context)
 
 def register(request):
     context = RequestContext(request)
