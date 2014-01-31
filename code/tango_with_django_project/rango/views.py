@@ -195,7 +195,14 @@ def user_login(request):
 @login_required
 def profile(request):
     context = RequestContext(request)
-    context_dict = {}
+    
+    user = User.objects.get(username=request.user)
+    userprofile = UserProfile.objects.get(user=user)
+    
+    context_dict = {
+                    'user': user,
+                    'userprofile': userprofile
+                    }
     return render_to_response('rango/profile.html', context_dict, context)
     
 @login_required
