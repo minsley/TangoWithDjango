@@ -4,13 +4,23 @@
 
 {% block body_block %}
 <div class="hero-unit">
-	<h1>{{ category.name }}</h1>
-	
+	<h1>
+		{{ category.name }}
+		{% if user.is_authenticated %}
+			<button id="likes" data-catid="{{ category.id }}" class="btn btn-mini btn-default" style="width:60px;">
+				<span class="pull-left">Like</span>
+				<span id="like_count" class="label label-info pull-right">{{ category.likes }}</span>
+			</button>
+		{% endif %}
+	</h1>
 	{% if category %}
 		{% if pages %}
 			<ul>
 			{% for page in pages %}
-				<li><a href="{{ page.url }}">{{ page.title }}</a><label>({{ page.views }} views)</label></li>
+				<li>
+					<span class="label label-info">{{ page.views }}</span>
+					<a href="{{ page.url }}">{{ page.title }}</a>
+				</li>
 			{% endfor %}
 			</ul>
 		{% else %}

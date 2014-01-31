@@ -66,6 +66,32 @@ def category(request, category_id):
     
     return render_to_response('rango/category.html', context_dict, context)
 
+def like_category(request):
+    likes = 0
+    if request.method == 'GET':
+        if 'category_id' in request.GET:
+            category_id = request.GET['category_id']
+            
+            try:
+                category = Category.objects.get(id=category_id)
+                likes = category.likes + 1
+                category.likes = likes
+                category.save()
+            except Category.DoesNotExist:
+                pass
+    return HttpResponse(likes)
+
+def suggest_category(request):
+    context = RequestContext(request)
+    cat_list = []
+    starts_with = ''
+    if request.method == 'GET':
+        starts_with = request.GET['suggestion']
+
+    cat_list = get_category_list(8, starts_with)
+
+    return render_to_response('rango/category_list.html', {'categories': cat_list }, context)
+
 @login_required
 def add_category(request):
     context = RequestContext(request)
@@ -124,8 +150,13 @@ def search(request):
         
         if query:
             result_list = run_query(query)
+            
+    context_dict = {
+                    'result_list': result_list,
+                    'categories': get_category_list()
+                    }
     
-    return render_to_response('rango/search.html', {'result_list': result_list}, context)
+    return render_to_response('rango/search.html', context_dict, context)
 
 def register(request):
     context = RequestContext(request)
@@ -159,14 +190,14 @@ def register(request):
         user_form = UserForm()
         profile_form = UserProfileForm()
         
-    return render_to_response(
-            'rango/register.html',
-            {
-                'user_form': user_form, 
-                'profile_form': profile_form,
-                'registered': registered
-            },
-            context )
+    context_dict = {
+                    'user_form': user_form, 
+                    'profile_form': profile_form,
+                    'registered': registered,
+                    'categories': get_category_list()
+                    }
+    
+    return render_to_response('rango/register.html', context_dict, context )
             
 def user_login(request):
     context = RequestContext(request)
@@ -190,7 +221,7 @@ def user_login(request):
             return HttpResponse("Invalid login details supplied.")
     else:
         # Probably a GET. Show login form.
-        return render_to_response('rango/login.html', {}, context)
+        return render_to_response('rango/login.html', {'categories': get_category_list()}, context)
    
 @login_required
 def profile(request):
@@ -201,14 +232,15 @@ def profile(request):
     
     context_dict = {
                     'user': user,
-                    'userprofile': userprofile
+                    'userprofile': userprofile,
+                    'categories': get_category_list()
                     }
     return render_to_response('rango/profile.html', context_dict, context)
     
 @login_required
 def restricted(request):
     context = RequestContext(request)
-    return render_to_response('rango/restricted.html', {}, context)
+    return render_to_response('rango/restricted.html', {'categories': get_category_list()}, context)
 
 @login_required
 def user_logout(request):
@@ -221,13 +253,13 @@ def track_url(request):
         if 'page_id' in request.GET:
             page_id = request.GET['page_id']
         
-        try:
-            page = Page.objects.get(id=page_id)
-            page.views += 1
-            page.save()
-            return HttpResponseRedirect(page.url)
-        except Page.DoesNotExist:
-            pass
+            try:
+                page = Page.objects.get(id=page_id)
+                page.views += 1
+                page.save()
+                return HttpResponseRedirect(page.url)
+            except Page.DoesNotExist:
+                pass
          
     return HttpResponseRedirect('/rango/')
            
@@ -237,9 +269,17 @@ def track_url(request):
 def slugify_url(url):
     return url.replace(' ', '-')
 
-def get_category_list():
+def get_category_list(max_results=0, starts_with=''):
+    category_list = []
     
-    category_list = Category.objects.order_by('-likes')[:5]
+    if starts_with:
+        category_list = Category.objects.filter(name__istartswith=starts_with).order_by('-likes')
+    else:
+        category_list = Category.objects.all()
+        
+    if max_results > 0:
+        if len(category_list) > max_results:
+            category_list = category_list[:max_results]
     
     # Replace spaces in category names for category urls
     for category in category_list:
