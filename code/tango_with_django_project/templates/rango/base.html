@@ -59,7 +59,9 @@
 			<!-- Sidebar -->
 			<div class="span3">
 				<div class="well sidebar-nav">
-					<!-- TODO: Put stuff here later -->
+					{% if categories %}
+						{% include "rango/category_list.html" %}
+					{% endif %}
 				</div>
 			</div>
 			

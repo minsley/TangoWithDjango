@@ -1,0 +1,12 @@
+<div class="span6">
+	<h2>Top Five Categories</h2>
+	{% if categories %}
+		<ul>
+			{% for category in categories %}
+				<li><a href="/rango/category/{{ category.id }}/{{ category.url }}/">{{ category.name }}</a></li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<strong>No categories at present.</strong>
+	{% endif %}
+</div>

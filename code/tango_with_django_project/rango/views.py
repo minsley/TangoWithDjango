@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-from rango.models import Category, Page
+from rango.models import Category, Page, UserProfile, User
 from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
 from rango.bing_search import run_query
 
@@ -13,29 +13,13 @@ from datetime import datetime
 def index(request):
     context = RequestContext(request)
     
-    category_list = Category.objects.order_by('-likes')[:5]
     top_5_pages = Page.objects.order_by('-views')[:5]
-    context_dict = {
-        'categories': category_list,
-        'top_5_pages': top_5_pages
+    context_dict = {  
+        'pages': top_5_pages,
+        'categories': get_category_list()
     }
     
-    # Replace spaces in category names for category urls
-    for category in category_list:
-        category.url = encode_url(category.name)
-    
-    response = render_to_response('rango/index.html', context_dict, context)
-    
-#     # Count visits to index using cookies
-#     visits = int(request.COOKIES.get('visits', '0'))
-#     if request.COOKIES.has_key('last_visit'):
-#         last_visit = request.COOKIES['last_visit']
-#         last_visit_time = datetime.strptime(last_visit[:-7], "%Y-%m-%d %H:%M:%S")
-#         if (datetime.now() - last_visit_time).days > 0:
-#             response.set_cookie('visits', visits+1)
-#             response.set_cookie('last_visit', datetime.now())
-#     else:
-#          response.set_cookie('last_visit', datetime.now())   
+    response = render_to_response('rango/index.html', context_dict, context) 
 
     # Count visits using session data
     if request.session.get('last_visit'):
@@ -60,19 +44,23 @@ def about_page(request):
         request.session['visits'] = 1
         visits = 1
         
-    context_dict = {'visits': visits}
+    context_dict = {
+                    'visits': visits,
+                    'categories': get_category_list()
+                    }
     return render_to_response("rango/about.html", context_dict, context)
 
-def category(request, category_name_url):
+def category(request, category_id):
     context = RequestContext(request)
-    category_name = decode_url(category_name_url)
-    context_dict = {'category_name': category_name, 'category_name_url': category_name_url}
-    
     try:
-        category = Category.objects.get(name=category_name)
+        category = Category.objects.get(id=category_id)
         pages = Page.objects.filter(category=category)
-        context_dict['pages'] = pages
-        context_dict['category'] = category
+        context_dict = {
+                        'pages': pages,
+                        'category': category,
+                        'category_name': category.name,
+                        'categories': get_category_list()
+                        }
     except Category.DoesNotExist:
         pass
     
@@ -93,30 +81,39 @@ def add_category(request):
     else:
         form = CategoryForm()
     
-    return render_to_response('rango/add_category.html', {'form': form}, context)
+    context_dict = {
+                    'form': form,
+                    'categories': get_category_list()
+                    }
+    
+    return render_to_response('rango/add_category.html', context_dict, context)
 
 @login_required
-def add_page(request, category_name_url):
+def add_page(request, category_id):
     context = RequestContext(request)
+    category = Category.objects.get(id=category_id)
     
-    category_name = decode_url(category_name_url)
     if request.method == 'POST':
         form = PageForm(request.POST)
         
         if form.is_valid():
             page = form.save(commit=false)
-            cat = Category.objects.get(name=category_name)
-            page.category = cat
+            page.category = category
             page.views = 0
             page.save()
             
-            return category(request, category_name_url)
+            return category(request, category)
         else:
             print form.errors
     else:
         form = PageForm()
         
-    return render_to_response('rango/add_page.html', {'category_name_url': category_name_url, 'category_name': category_name, 'form': form}, context)
+    context_dict = {
+                    'category': category, 
+                    'form': form, 
+                    'categories': get_category_list()
+                    }
+    return render_to_response('rango/add_page.html', context_dict, context)
 
 def search(request):
     context = RequestContext(request)
@@ -164,9 +161,11 @@ def register(request):
         
     return render_to_response(
             'rango/register.html',
-            {'user_form': user_form, 
+            {
+                'user_form': user_form, 
                 'profile_form': profile_form,
-                'registered': registered},
+                'registered': registered
+            },
             context )
             
 def user_login(request):
@@ -192,6 +191,12 @@ def user_login(request):
     else:
         # Probably a GET. Show login form.
         return render_to_response('rango/login.html', {}, context)
+   
+@login_required
+def profile(request):
+    context = RequestContext(request)
+    context_dict = {}
+    return render_to_response('rango/profile.html', context_dict, context)
     
 @login_required
 def restricted(request):
@@ -203,9 +208,34 @@ def user_logout(request):
     # @login_required guarantees they're logged in, so we can safely log them out
     logout(request)
     return HttpResponseRedirect('/rango/')
-            
-def encode_url(url):
-    return url.replace(' ', '_')
+ 
+def track_url(request):
+    if request.method == 'GET':
+        if 'page_id' in request.GET:
+            page_id = request.GET['page_id']
+        
+        try:
+            page = Page.objects.get(id=page_id)
+            page.views += 1
+            page.save()
+            return HttpResponseRedirect(page.url)
+        except Page.DoesNotExist:
+            pass
+         
+    return HttpResponseRedirect('/rango/')
+           
+#
+# Helper Methods
+#
+def slugify_url(url):
+    return url.replace(' ', '-')
 
-def decode_url(encoded_url):
-    return encoded_url.replace('_', ' ')
+def get_category_list():
+    
+    category_list = Category.objects.order_by('-likes')[:5]
+    
+    # Replace spaces in category names for category urls
+    for category in category_list:
+        category.url = slugify_url(category.name)
+        
+    return category_list
